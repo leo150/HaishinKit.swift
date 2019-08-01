@@ -146,6 +146,8 @@ final class LiveViewController: UIViewController {
             case RTMPConnection.Code.connectSuccess.rawValue:
                 rtmpStream!.publish(Preference.defaultInstance.streamName!)
                 // sharedObject!.connect(rtmpConnection)
+            case RTMPConnection.Code.connectFailed.rawValue, RTMPConnection.Code.connectClosed.rawValue:
+                rtmpConnection.connect(Preference.defaultInstance.uri!)
             default:
                 break
             }
