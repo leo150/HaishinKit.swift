@@ -98,15 +98,13 @@ open class NetSocket: NSObject {
     }
 
     func close(isDisconnected: Bool) {
-        outputQueue.async {
-            guard let runloop: RunLoop = self.runloop else {
-                return
-            }
-            self.deinitConnection(isDisconnected: isDisconnected)
-            self.runloop = nil
-            CFRunLoopStop(runloop.getCFRunLoop())
-            logger.trace("isDisconnected: \(isDisconnected)")
+        guard let runloop: RunLoop = runloop else {
+            return
         }
+        deinitConnection(isDisconnected: isDisconnected)
+        self.runloop = nil
+        CFRunLoopStop(runloop.getCFRunLoop())
+        logger.trace("isDisconnected: \(isDisconnected)")
     }
 
     open func close() {
@@ -210,10 +208,14 @@ extension NetSocket: StreamDelegate {
             break
         //  8 = 1 << 3
         case .errorOccurred:
-            close(isDisconnected: true)
+            if aStream == inputStream {
+                close(isDisconnected: true)
+            }
         // 16 = 1 << 4
         case .endEncountered:
-            close(isDisconnected: true)
+            if aStream == inputStream {
+                close(isDisconnected: true)
+            }
         default:
             break
         }
